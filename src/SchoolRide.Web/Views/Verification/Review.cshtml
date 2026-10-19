@@ -1,0 +1,33 @@
+@model List<Verification>
+@{ ViewData["Title"] = "Review verifications"; }
+<h2 class="h4">Pending verifications</h2>
+@if (!Model.Any())
+{
+    <p class="text-muted">Nothing waiting for review.</p>
+}
+else
+{
+    <table class="table bg-white align-middle">
+        <thead><tr><th>Student</th><th>Institution / ID</th><th>Method</th><th>Reference</th><th>Submitted</th><th style="min-width:260px">Decision</th></tr></thead>
+        <tbody>
+        @foreach (var v in Model)
+        {
+            <tr>
+                <td>@v.User.FullName<br /><small class="text-muted">@v.User.Email</small></td>
+                <td>@v.User.Institution<br /><small>@v.User.StudentId</small></td>
+                <td>@v.Method.DisplayName()</td>
+                <td>@v.Reference</td>
+                <td>@v.SubmittedAt.ToString("dd MMM HH:mm")</td>
+                <td>
+                    <form asp-action="Decide" method="post">
+                        <input type="hidden" name="id" value="@v.Id" />
+                        <input name="note" class="form-control form-control-sm mb-1" placeholder="Note (optional)" />
+                        <button name="approve" value="true" class="btn btn-success btn-sm">Approve</button>
+                        <button name="approve" value="false" class="btn btn-outline-danger btn-sm">Reject</button>
+                    </form>
+                </td>
+            </tr>
+        }
+        </tbody>
+    </table>
+}

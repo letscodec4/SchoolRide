@@ -1,0 +1,9 @@
+:root { --sr-navy: #1f3a5f; --sr-teal: #2a9d8f; --sr-amber: #e9a23b; }
+body { background: #f5f6f8; }
+.sr-nav { background: var(--sr-navy); }
+.hero { background: linear-gradient(135deg, var(--sr-navy), #2d5287); color: #fff; border-radius: 1rem; }
+.stat { font-size: 2.2rem; font-weight: 700; color: var(--sr-navy); }
+.card { border: 0; box-shadow: 0 1px 4px rgba(0,0,0,.08); }
+.price { color: var(--sr-teal); font-weight: 700; }
+.btn-primary { background: var(--sr-navy); border-color: var(--sr-navy); }
+.btn-primary:hover { background: #17304f; border-color: #17304f; }

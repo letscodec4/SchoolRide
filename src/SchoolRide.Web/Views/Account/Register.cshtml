@@ -1,0 +1,38 @@
+@model RegisterViewModel
+@{ ViewData["Title"] = "Sign up"; }
+<div class="row justify-content-center"><div class="col-md-7 col-lg-6">
+<div class="card"><div class="card-body p-4">
+    <h2 class="h4 mb-3">Create your account</h2>
+    <form asp-action="Register" method="post">
+        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+        <div class="mb-3"><label asp-for="FullName" class="form-label"></label><input asp-for="FullName" class="form-control" /><span asp-validation-for="FullName" class="text-danger"></span></div>
+        <div class="mb-3"><label asp-for="Email" class="form-label"></label><input asp-for="Email" class="form-control" /><span asp-validation-for="Email" class="text-danger"></span></div>
+        <div class="row">
+            <div class="col-md-6 mb-3"><label asp-for="Password" class="form-label"></label><input asp-for="Password" class="form-control" /><span asp-validation-for="Password" class="text-danger"></span></div>
+            <div class="col-md-6 mb-3"><label asp-for="ConfirmPassword" class="form-label"></label><input asp-for="ConfirmPassword" class="form-control" /><span asp-validation-for="ConfirmPassword" class="text-danger"></span></div>
+        </div>
+        <div class="mb-3">
+            <label asp-for="Institution" class="form-label"></label>
+            <select asp-for="Institution" class="form-select">
+                <option value="">Choose your institution</option>
+                @foreach (var i in Institutions.All) { <option value="@i" selected="@(Model.Institution == i)">@i</option> }
+            </select>
+            <span asp-validation-for="Institution" class="text-danger"></span>
+        </div>
+        <div class="row">
+            <div class="col-md-6 mb-3"><label asp-for="StudentId" class="form-label"></label><input asp-for="StudentId" class="form-control" /><span asp-validation-for="StudentId" class="text-danger"></span></div>
+            <div class="col-md-6 mb-3"><label asp-for="Phone" class="form-label"></label><input asp-for="Phone" class="form-control" /><span asp-validation-for="Phone" class="text-danger"></span></div>
+        </div>
+        <div class="mb-3">
+            <label asp-for="Role" class="form-label"></label>
+            <select asp-for="Role" class="form-select">
+                <option value="@UserRole.Passenger">Find rides (passenger)</option>
+                <option value="@UserRole.Driver">Offer rides (driver)</option>
+                <option value="@UserRole.Both">Both</option>
+            </select>
+            <span asp-validation-for="Role" class="text-danger"></span>
+        </div>
+        <button class="btn btn-primary w-100">Sign up</button>
+    </form>
+    <p class="small mt-3 mb-0">Already registered? <a asp-action="Login">Log in</a></p>
+</div></div></div></div>

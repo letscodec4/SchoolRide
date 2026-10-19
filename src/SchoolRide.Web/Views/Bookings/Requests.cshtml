@@ -1,0 +1,36 @@
+@model BookingListViewModel
+@{ ViewData["Title"] = "Ride requests"; }
+<h2 class="h4">Ride requests</h2>
+@if (!Model.Bookings.Any()) { <div class="alert alert-light border">No requests yet. They appear here when a student books one of your rides.</div> }
+else
+{
+<table class="table bg-white align-middle">
+    <thead><tr><th>Passenger</th><th>Trip</th><th>Seats</th><th>Fare</th><th>Status</th><th></th></tr></thead>
+    <tbody>
+    @foreach (var b in Model.Bookings)
+    {
+        <tr>
+            <td>@b.Passenger.FullName<br /><small class="text-muted">@b.Passenger.Institution</small></td>
+            <td>@b.Ride.Origin.DisplayName() &rarr; @b.Ride.Destination.DisplayName()<br /><small class="text-muted">@b.Ride.DepartureTime.ToString("dd MMM HH:mm")</small></td>
+            <td>@b.SeatsRequested</td>
+            <td>P@(b.FareAmount.ToString("0.00")) <small class="text-muted">(you receive P@((b.FareAmount - b.PlatformFee).ToString("0.00")))</small></td>
+            <td><span class="badge @b.Status.BadgeClass()">@b.Status</span></td>
+            <td class="text-end">
+                @if (b.Status == BookingStatus.Pending)
+                {
+                    <form asp-action="Respond" method="post" class="d-inline">
+                        <input type="hidden" name="id" value="@b.Id" />
+                        <button name="accept" value="true" class="btn btn-success btn-sm">Accept</button>
+                        <button name="accept" value="false" class="btn btn-outline-danger btn-sm">Decline</button>
+                    </form>
+                }
+                @if (b.Status == BookingStatus.Completed && !Model.RatedByMe.Contains(b.Id))
+                {
+                    <a class="btn btn-warning btn-sm" asp-controller="Ratings" asp-action="Create" asp-route-bookingId="@b.Id">Rate passenger</a>
+                }
+            </td>
+        </tr>
+    }
+    </tbody>
+</table>
+}

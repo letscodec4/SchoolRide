@@ -1,0 +1,43 @@
+@model RideDetailsViewModel
+@{
+    var r = Model.Ride;
+    ViewData["Title"] = "Ride details";
+}
+<div class="row"><div class="col-lg-8">
+<div class="card mb-3"><div class="card-body">
+    <h2 class="h4">@r.Origin.DisplayName() &rarr; @r.Destination.DisplayName()</h2>
+    <dl class="row mb-0">
+        <dt class="col-sm-4">Departure</dt><dd class="col-sm-8">@r.DepartureTime.ToString("dddd dd MMMM yyyy, HH:mm")</dd>
+        @if (!string.IsNullOrWhiteSpace(r.PickupNote)) { <dt class="col-sm-4">Pick-up point</dt><dd class="col-sm-8">@r.PickupNote</dd> }
+        <dt class="col-sm-4">Driver</dt>
+        <dd class="col-sm-8">@r.Driver.FullName, @r.Driver.Institution
+            @if (Model.DriverRating != null) { <span class="text-muted">&middot; @Model.DriverRating.Average.ToString("0.0")/5 from @Model.DriverRating.Count rating(s)</span> }
+        </dd>
+        <dt class="col-sm-4">Seats left</dt><dd class="col-sm-8">@r.SeatsAvailable of @r.SeatsTotal</dd>
+        <dt class="col-sm-4">Maximum detour</dt><dd class="col-sm-8">@r.MaxDetourMinutes minutes</dd>
+        <dt class="col-sm-4">Price</dt><dd class="col-sm-8"><span class="price">P@(r.PricePerSeat.ToString("0.00"))</span> per seat (includes a @((Model.PlatformFeeRate * 100).ToString("0"))% platform fee)</dd>
+    </dl>
+</div></div>
+</div>
+<div class="col-lg-4">
+<div class="card"><div class="card-body">
+    @if (Model.CanBook)
+    {
+        <h3 class="h6">Request seats</h3>
+        <form asp-controller="Bookings" asp-action="Create" method="post">
+            <input type="hidden" name="rideId" value="@r.Id" />
+            <label class="form-label">Seats</label>
+            <select name="seats" class="form-select mb-3">
+                @for (var i = 1; i <= r.SeatsAvailable; i++) { <option value="@i">@i seat(s): P@((r.PricePerSeat * i).ToString("0.00"))</option> }
+            </select>
+            <button class="btn btn-primary w-100">Send request</button>
+            <p class="small text-muted mt-2 mb-0">You pay the driver directly in cash or mobile money on the day. The driver must accept before the trip is confirmed.</p>
+        </form>
+    }
+    else
+    {
+        <div class="alert alert-secondary mb-0">@Model.CannotBookReason</div>
+    }
+</div></div>
+</div></div>
+<a class="btn btn-link mt-3" asp-action="Index">&larr; Back to search</a>

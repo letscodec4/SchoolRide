@@ -1,0 +1,35 @@
+@model BookingListViewModel
+@{ ViewData["Title"] = "My bookings"; }
+<h2 class="h4">My bookings</h2>
+@if (!Model.Bookings.Any()) { <div class="alert alert-light border">No bookings yet. <a asp-controller="Rides" asp-action="Index">Find a ride</a>.</div> }
+else
+{
+<table class="table bg-white align-middle">
+    <thead><tr><th>Trip</th><th>Departure</th><th>Seats</th><th>Fare</th><th>Status</th><th></th></tr></thead>
+    <tbody>
+    @foreach (var b in Model.Bookings)
+    {
+        <tr>
+            <td><a asp-controller="Rides" asp-action="Details" asp-route-id="@b.RideId">@b.Ride.Origin.DisplayName() &rarr; @b.Ride.Destination.DisplayName()</a><br /><small class="text-muted">Driver: @b.Ride.Driver.FullName</small></td>
+            <td>@b.Ride.DepartureTime.ToString("dd MMM HH:mm")</td>
+            <td>@b.SeatsRequested</td>
+            <td>P@(b.FareAmount.ToString("0.00"))</td>
+            <td><span class="badge @b.Status.BadgeClass()">@b.Status</span>
+                @if (b.Status == BookingStatus.Pending) { <div class="small text-muted">answer due by @b.ExpiresAt.ToString("HH:mm")</div> }
+                @if (b.Status == BookingStatus.Expired) { <div class="small text-muted">no answer, try another ride</div> }
+            </td>
+            <td class="text-end">
+                @if (b.Status is BookingStatus.Pending or BookingStatus.Accepted)
+                {
+                    <form asp-action="Cancel" asp-route-id="@b.Id" method="post" class="d-inline"><button class="btn btn-outline-danger btn-sm">Cancel</button></form>
+                }
+                @if (b.Status == BookingStatus.Completed && !Model.RatedByMe.Contains(b.Id))
+                {
+                    <a class="btn btn-warning btn-sm" asp-controller="Ratings" asp-action="Create" asp-route-bookingId="@b.Id">Rate driver</a>
+                }
+            </td>
+        </tr>
+    }
+    </tbody>
+</table>
+}

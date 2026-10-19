@@ -1,0 +1,42 @@
+@model RideSearchViewModel
+@{ ViewData["Title"] = "Find a ride"; }
+<h2 class="h4">Find a ride</h2>
+<form method="get" class="card card-body mb-4">
+    <div class="row g-2 align-items-end">
+        <div class="col-md-4">
+            <label class="form-label">From</label>
+            <select asp-for="Origin" asp-items="Html.GetEnumSelectList<Place>()" class="form-select"><option value="">Anywhere</option></select>
+        </div>
+        <div class="col-md-4">
+            <label class="form-label">To</label>
+            <select asp-for="Destination" asp-items="Html.GetEnumSelectList<Place>()" class="form-select"><option value="">Anywhere</option></select>
+        </div>
+        <div class="col-md-2">
+            <label class="form-label">Date</label>
+            <input asp-for="Date" type="date" class="form-control" />
+        </div>
+        <div class="col-md-2"><button class="btn btn-primary w-100">Search</button></div>
+    </div>
+</form>
+
+@if (!Model.Results.Any())
+{
+    <div class="alert alert-light border">No open rides match. Try a different date or area, or check back later as drivers post new rides.</div>
+}
+@foreach (var r in Model.Results)
+{
+    <div class="card mb-2"><div class="card-body d-flex flex-wrap justify-content-between align-items-center gap-2">
+        <div>
+            <div class="fw-semibold">@r.Origin.DisplayName() &rarr; @r.Destination.DisplayName()</div>
+            <div class="text-muted small">
+                @r.DepartureTime.ToString("ddd dd MMM, HH:mm") &middot; @r.SeatsAvailable seat(s) left &middot; driver @r.Driver.FullName
+                @if (Model.DriverRatings.TryGetValue(r.DriverId, out var rs)) { <span>&middot; @rs.Average.ToString("0.0")/5 (@rs.Count)</span> }
+                &middot; detour up to @r.MaxDetourMinutes min
+            </div>
+        </div>
+        <div class="text-end">
+            <div class="price fs-5">P@(r.PricePerSeat.ToString("0.00")) <small class="text-muted fw-normal">per seat</small></div>
+            <a class="btn btn-primary btn-sm" asp-action="Details" asp-route-id="@r.Id">View and book</a>
+        </div>
+    </div></div>
+}

@@ -1,0 +1,43 @@
+@model RideCreateViewModel
+@{ ViewData["Title"] = "Post a ride"; }
+<div class="row justify-content-center"><div class="col-md-8 col-lg-6">
+<div class="card"><div class="card-body p-4">
+    <h2 class="h4 mb-3">Post a ride</h2>
+    <form asp-action="Create" method="post">
+        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+        <div class="row">
+            <div class="col-md-6 mb-3"><label asp-for="Origin" class="form-label"></label><select asp-for="Origin" asp-items="Html.GetEnumSelectList<Place>()" class="form-select"></select></div>
+            <div class="col-md-6 mb-3"><label asp-for="Destination" class="form-label"></label><select asp-for="Destination" asp-items="Html.GetEnumSelectList<Place>()" class="form-select"></select><span asp-validation-for="Destination" class="text-danger"></span></div>
+        </div>
+        <div class="mb-3"><label asp-for="PickupNote" class="form-label"></label><input asp-for="PickupNote" class="form-control" /></div>
+        <div class="mb-3"><label asp-for="DepartureTime" class="form-label"></label><input asp-for="DepartureTime" type="datetime-local" class="form-control" /><span asp-validation-for="DepartureTime" class="text-danger"></span></div>
+        <div class="row">
+            <div class="col-md-4 mb-3"><label asp-for="Seats" class="form-label"></label><input asp-for="Seats" type="number" min="1" max="6" class="form-control" /><span asp-validation-for="Seats" class="text-danger"></span></div>
+            <div class="col-md-4 mb-3">
+                <label asp-for="PricePerSeat" class="form-label"></label>
+                <input asp-for="PricePerSeat" type="number" step="0.50" min="@ViewBag.Min" max="@ViewBag.Max" class="form-control" />
+                <span asp-validation-for="PricePerSeat" class="text-danger"></span>
+                <div class="form-text">Allowed: P@(((decimal)ViewBag.Min).ToString("0.00")) to P@(((decimal)ViewBag.Max).ToString("0.00")). Suggested automatically from the route.</div>
+            </div>
+            <div class="col-md-4 mb-3"><label asp-for="MaxDetourMinutes" class="form-label"></label><input asp-for="MaxDetourMinutes" type="number" min="0" max="30" class="form-control" /><span asp-validation-for="MaxDetourMinutes" class="text-danger"></span></div>
+        </div>
+        <button class="btn btn-primary w-100">Post ride</button>
+    </form>
+</div></div></div></div>
+
+@section Scripts {
+<script>
+    // Refill the suggested price whenever the route changes.
+    const origin = document.getElementById('Origin');
+    const dest = document.getElementById('Destination');
+    const price = document.getElementById('PricePerSeat');
+    async function suggest() {
+        try {
+            const res = await fetch(`@Url.Action("Suggest", "Rides")?origin=${origin.value}&destination=${dest.value}`);
+            if (res.ok) price.value = (await res.json()).price.toFixed(2);
+        } catch { /* keep whatever the driver typed */ }
+    }
+    origin.addEventListener('change', suggest);
+    dest.addEventListener('change', suggest);
+</script>
+}

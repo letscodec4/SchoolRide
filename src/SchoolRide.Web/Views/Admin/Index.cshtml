@@ -1,0 +1,30 @@
+@model AdminDashboardViewModel
+@{ ViewData["Title"] = "Dashboard"; }
+<h2 class="h4">Pilot dashboard</h2>
+<div class="row g-3 text-center mb-4">
+    <div class="col-6 col-md-3"><div class="card p-3"><div class="stat">@Model.Users</div>Students registered</div></div>
+    <div class="col-6 col-md-3"><div class="card p-3"><div class="stat">@Model.VerifiedUsers</div>Verified</div></div>
+    <div class="col-6 col-md-3"><div class="card p-3"><div class="stat">@Model.OpenRides</div>Open rides (of @Model.TotalRides)</div></div>
+    <div class="col-6 col-md-3"><div class="card p-3"><div class="stat">@Model.PendingVerifications</div><a asp-controller="Verification" asp-action="Review">Awaiting review</a></div></div>
+</div>
+
+<div class="row g-3">
+    <div class="col-md-6"><div class="card"><div class="card-body">
+        <h3 class="h6">Booking funnel</h3>
+        <table class="table table-sm mb-0">
+            @foreach (var s in Enum.GetValues<BookingStatus>())
+            {
+                <tr><td><span class="badge @s.BadgeClass()">@s</span></td><td class="text-end">@(Model.BookingsByStatus.GetValueOrDefault(s))</td></tr>
+            }
+        </table>
+    </div></div></div>
+    <div class="col-md-6"><div class="card"><div class="card-body">
+        <h3 class="h6">Evaluation measures</h3>
+        <dl class="row mb-0">
+            <dt class="col-7">Avg driver response time</dt><dd class="col-5 text-end">@(Model.AvgDriverResponseMinutes?.ToString("0.0") ?? "n/a") min</dd>
+            <dt class="col-7">Lapsed requests</dt><dd class="col-5 text-end">@(Model.LapseRatePercent?.ToString("0.0") ?? "n/a")%</dd>
+            <dt class="col-7">Fares on completed trips</dt><dd class="col-5 text-end">P@(Model.CompletedFares.ToString("0.00"))</dd>
+            <dt class="col-7">Platform revenue (commission)</dt><dd class="col-5 text-end">P@(Model.PlatformRevenue.ToString("0.00"))</dd>
+        </dl>
+    </div></div></div>
+</div>

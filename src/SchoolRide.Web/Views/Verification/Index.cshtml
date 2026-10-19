@@ -1,0 +1,45 @@
+@model VerificationIndexViewModel
+@{ ViewData["Title"] = "Verification"; }
+<h2 class="h4">Student verification</h2>
+<p>Status: <span class="badge @Model.Status.BadgeClass()">@Model.Status</span></p>
+
+@if (Model.Status == VerificationStatus.Approved)
+{
+    <div class="alert alert-success">You are verified. You can search, book and post rides.</div>
+}
+else if (Model.Status == VerificationStatus.Pending)
+{
+    <div class="alert alert-info">Your details are with the reviewer. You will be able to use the platform as soon as they are approved.</div>
+}
+else
+{
+    <div class="card mb-4"><div class="card-body">
+        @if (Model.Status == VerificationStatus.Rejected) { <div class="alert alert-danger">Your last submission was rejected. Check the note below and submit again.</div> }
+        <form asp-action="Submit" method="post">
+            <div class="mb-3">
+                <label asp-for="Form.Method" class="form-label"></label>
+                <select asp-for="Form.Method" asp-items="Html.GetEnumSelectList<VerificationMethod>()" class="form-select"></select>
+            </div>
+            <div class="mb-3">
+                <label asp-for="Form.Reference" class="form-label"></label>
+                <input asp-for="Form.Reference" class="form-control" />
+                <span asp-validation-for="Form.Reference" class="text-danger"></span>
+            </div>
+            <button class="btn btn-primary">Submit for review</button>
+        </form>
+    </div></div>
+}
+
+@if (Model.History.Any())
+{
+    <h3 class="h6">History</h3>
+    <table class="table table-sm bg-white">
+        <thead><tr><th>Submitted</th><th>Method</th><th>Status</th><th>Reviewer note</th></tr></thead>
+        <tbody>
+        @foreach (var v in Model.History)
+        {
+            <tr><td>@v.SubmittedAt.ToString("dd MMM yyyy HH:mm")</td><td>@v.Method.DisplayName()</td><td><span class="badge @v.Status.BadgeClass()">@v.Status</span></td><td>@v.ReviewerNote</td></tr>
+        }
+        </tbody>
+    </table>
+}

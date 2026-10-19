@@ -1,0 +1,41 @@
+@{ ViewData["Title"] = "Home"; }
+<div class="hero p-5 mb-4">
+    <h1 class="display-5 fw-bold">Share the ride. Split the fare.</h1>
+    <p class="lead mb-4">A verified, student-only ride-sharing platform for Gaborone's tertiary institutions. Students with a car and spare seats meet students who need a cheaper, more predictable way to campus.</p>
+    @if (User.Identity?.IsAuthenticated == true)
+    {
+        @if (User.IsInRole("Admin"))
+        {
+            <a class="btn btn-warning btn-lg" asp-controller="Admin" asp-action="Index">Open dashboard</a>
+        }
+        else
+        {
+            @if (User.IsInRole("Passenger") || User.IsInRole("Both"))
+            {
+                <a class="btn btn-warning btn-lg me-2" asp-controller="Rides" asp-action="Index">Find a ride</a>
+            }
+            @if (User.IsInRole("Driver") || User.IsInRole("Both"))
+            {
+                <a class="btn btn-outline-light btn-lg" asp-controller="Rides" asp-action="Create">Post a ride</a>
+            }
+        }
+    }
+    else
+    {
+        <a class="btn btn-warning btn-lg me-2" asp-controller="Account" asp-action="Register">Create an account</a>
+        <a class="btn btn-outline-light btn-lg" asp-controller="Account" asp-action="Login">Log in</a>
+    }
+</div>
+
+<div class="row g-3 text-center">
+    <div class="col-md-4"><div class="card h-100 p-3"><div class="stat">84%</div><div>of surveyed students said they would use a platform like this</div></div></div>
+    <div class="col-md-4"><div class="card h-100 p-3"><div class="stat">58%</div><div>named long waiting times as their biggest transport problem</div></div></div>
+    <div class="col-md-4"><div class="card h-100 p-3"><div class="stat">72%</div><div>said a cheaper fare would encourage them to switch</div></div></div>
+</div>
+<p class="text-muted small mt-2">Survey of 50 Gaborone tertiary students.</p>
+
+<div class="row g-3 mt-2">
+    <div class="col-md-4"><div class="card h-100"><div class="card-body"><h5>Verified students only</h5><p class="mb-0">Every rider and driver is checked before they can post or book.</p></div></div></div>
+    <div class="col-md-4"><div class="card h-100"><div class="card-body"><h5>Fares that beat a taxi</h5><p class="mb-0">Per-seat prices are capped well below the average taxi spend.</p></div></div></div>
+    <div class="col-md-4"><div class="card h-100"><div class="card-body"><h5>No endless waiting</h5><p class="mb-0">Requests that a driver does not answer lapse automatically, so you can try another ride.</p></div></div></div>
+</div>
